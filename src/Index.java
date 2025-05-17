@@ -1,104 +1,148 @@
 import javax.swing.JOptionPane;
-public class Index {
-    public static void main(String[] args) {
-        int[] v = new int [7];
-        int total = 0, value = 0;
-        boolean keepRunning = true;
-
-        while(keepRunning){
-            String [] options = {"Carregar", "Sacar dinheiro", "Estatísticas", "Encerrar"};
-            int choice = JOptionPane.showOptionDialog(
-                    null,
-                    "Escolha uma opção:",
-                    "Menu",
-                    JOptionPane.DEFAULT_OPTION,
-                    JOptionPane.INFORMATION_MESSAGE,
-                    null,
-                    options,
-                    options[0]
-            );
-
-            switch (choice){
-                case 0:
-                    v = Load();
-                    total = Total(v);
-                    break;
-                case 1:
-                	
-	                    value = Integer.parseInt(JOptionPane.showInputDialog("Insira a quantidade a ser sacado:"));
-	                    while(value < 0 || value == 3){
-	                        value = Integer.parseInt(JOptionPane.showInputDialog("Valor inválido!! Insira a quantidade a ser sacado:"));
-	                    }
-                    int[] cash = Take(v, value);
-
-                    break;
-                case 2:Statistics(total, v);
-                    break;
-                case 3:
-                    System.exit(0);
-                    break;
-            }
-        }
-
-    }
-    
-    
-
-    public static int[] Load(){
-        String[] values = {"2.00", "5.00", "10.00", "20.00", "50.00", "100.00", "200.00"};
-        int[] v = new int [7];
-        int total = 0;
-
-        for(int i = 0; i<=6; i++){
-        	
-        	do {
-        		v[i] = Integer.parseInt(JOptionPane.showInputDialog("Insira a quantidade de notas de R$" + values[i]));
-        	}while(v[i]>100 || v[i]<0);
-        }
-
-        return v;
-    }
-
-    public static int Total(int[] v){
-        int[] values = {2, 5, 10, 20, 50, 100, 200};
-        int total = 0;
-        for(int i = 0;i<=6;i++){
-            int n =  v[i] * values[i];
-            total = total + n;
-        }
-
-        return total;
-    }
-
-    public static int[] Take(int[] v, int value) {
-        int[] cash = new int[7];
-        int[] valores = {2, 5, 10, 20, 50, 100, 200};
-        int j = 0;
-        
-        //refazer essa parte
-        
-        return cash;
-    }
-        
-        public static boolean zeroV(int[] v) {
-    		for(int i = 0; i<v.length; i++) {
-    			if(v[i]!=0) {
-    				return false;
-    			}
-    		}
-    		return true;
-        }
-    	
-
-
-    public static void Statistics(int total, int[] v){
-    JOptionPane.showMessageDialog(null, total);
-    	StringBuilder mostrar = new StringBuilder();
-    	for(int i = 0; i < v.length; i++) {
-    		mostrar.append(v[i]).append(" ");
-    	}
-    	
-    	JOptionPane.showMessageDialog(null, mostrar.toString());
-        
-    }
+public class Index{
+	public static void main(String[] args) {
+		int[] notas = new int[7];
+		boolean continuar = true;
+		// MENU
+		
+		while(continuar) {
+			String [] opcoes = {"Carregar Notas", "Retirar Notas", "Estatística", "Encerrar"};
+			int escolha = JOptionPane.showOptionDialog(null, "Escolha um opção:", "Menu", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, opcoes, opcoes[0]);
+			switch(escolha) {
+			case 0:
+				notas = Carregar();
+				break;
+			case 1:
+				Sacar(notas);
+				break;
+			case 2:
+				break;
+			case 3:
+				JOptionPane.showMessageDialog(null, "Programa encerrado.");
+				System.exit(0);
+			}
+			
+		}
+		
+	}
+	
+	
+	// Depositar as notas.
+	
+	public static int[] Carregar(){
+		// Aqui, criei um vetor com o valores das notas em String para facilitar a demonstração na caixa de diálogo do JOptionPane.
+		String[] valores = {"2.00", "5.00", "10.00", "20.00", "50.00", "100.00", "200.00"};
+		
+		int[] notas = new int[7];
+		
+		for(int i = 0; i<notas.length;i++) {
+			notas[i] = Integer.parseInt(JOptionPane.showInputDialog("Insira a quantidade de notas de "+ valores[i]));
+			while(notas[i]>100 || notas[i]<0) {
+				notas[i] = Integer.parseInt(JOptionPane.showInputDialog("Número de notas inválido!! Insira a quantidade de notas de "+ valores[i]));
+			}
+		}
+		return notas;
+	}
+	
+	// Sacar o dinheiro.
+	
+	public static void Sacar(int[] notas) {
+		int j = 0;
+		
+		while(j<100 || !Vazio(notas)) {
+			String input = JOptionPane.showInputDialog("Insira a quantidade a sacar:");
+			
+			if(input==null) {
+				return;
+			}
+			
+			
+			int value;
+			try {
+				value = Integer.parseInt(input);
+			}catch(NumberFormatException e){
+				JOptionPane.showMessageDialog(null, "VALOR SOLICITADO NÃO PODE SER SACADO.");
+				continue;
+			}
+			
+			if(value<=0) {
+				JOptionPane.showMessageDialog(null, "VALOR SOLICITADO NÃO PODE SER SACADO.");
+				continue;
+			}
+			
+			if(value==3) {
+				JOptionPane.showMessageDialog(null, "VALOR SOLICITADO INVÁLIDO.");
+				continue;
+			}
+			
+			if(value<2||value>3000) {
+				JOptionPane.showMessageDialog(null, "VALOR SOLICITADO INVÁLIDO.");
+				continue;
+			}
+			
+			int[] resultado = tentarSaque(notas, value);
+			j++;
+		}
+		
+		if(Vazio(notas)) {
+			JOptionPane.showMessageDialog(null, "EXCEDEU O LIMITE DO CAIXA.");
+		}
+	}
+	
+	public static int[] tentarSaque(int[] notas, int value) {
+		int[] cash = new int[7];
+		int[] valores = {2, 5, 10, 20, 50, 100, 200};
+		
+		for(int i=6 ;i>=0; i--) {
+			while(value >= valores[i] && notas[i]>0) {
+				value -= valores[i];
+				notas[i]--;
+				cash[i]++;
+			}
+		}
+		
+		if(value>0) {
+			//Caso o saque for incompleto: devolve as notas.
+			for(int i=0; i<7; i++) {
+				notas[i] += cash[i];
+			}
+			JOptionPane.showMessageDialog(null, "Não foi possível sacar esse valor com as notas disponíveis.");
+			return new int[7]; // vazio
+		}
+		
+		String[] vNotas = {"2.00", "5.00", "10.00", "20.00", "50.00", "100.00", "200.00"};
+		StringBuilder recibo = new StringBuilder();
+		for(int i=0;i<7; i++) {
+			if(cash[i]>0) {
+				recibo.append("R$").append(vNotas[i]).append(": ").append(cash[i]).append("\n");
+			}
+		}
+		
+		JOptionPane.showMessageDialog(null, recibo.toString());
+		return cash;
+	}
+	
+	
+	//Verifica se o vetor com as notas está vazio.
+	public static boolean Vazio(int[] notas) {
+		for(int i=0; i<notas.length;) {
+			if(notas[i]!=0) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	
+	
+	//Apenas uma função teste.
+	public static void VerificarVetor(int[] notas) {
+		StringBuilder mostrar = new StringBuilder();
+		for(int i=0; i<notas.length;i++) {
+			mostrar.append(notas[i]).append(" ");
+		}
+		
+		JOptionPane.showMessageDialog(null, mostrar.toString());
+		
+	}
 }
