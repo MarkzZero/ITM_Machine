@@ -2,20 +2,31 @@ import javax.swing.JOptionPane;
 public class Index{
 	public static void main(String[] args) {
 		int[] notas = new int[7];
+		int total = 0;
+		int media = 0;
+		int quantidade = 0;
+		int sobras = 0;
+		int vTotal = 0;
 		boolean continuar = true;
-		// MENU
 		
+		// MENU
 		while(continuar) {
 			String [] opcoes = {"Carregar Notas", "Retirar Notas", "Estatística", "Encerrar"};
 			int escolha = JOptionPane.showOptionDialog(null, "Escolha um opção:", "Menu", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, opcoes, opcoes[0]);
 			switch(escolha) {
 			case 0:
 				notas = Carregar();
+				total = vInicial(notas);
 				break;
 			case 1:
-				Sacar(notas);
+				int[] resultado = Sacar(notas);
+				media = resultado[0];
+				quantidade = resultado[1];
+				vTotal = resultado[2];
+				sobras = sobras(notas);
 				break;
 			case 2:
+				Estatisticas(total, media, quantidade, sobras, vTotal);
 				break;
 			case 3:
 				JOptionPane.showMessageDialog(null, "Programa encerrado.");
@@ -44,16 +55,30 @@ public class Index{
 		return notas;
 	}
 	
+	//Verifica qual o valor inicial das notas antes do saque.
+	public static int vInicial(int[] notas) {
+		int[] valores = {2, 5, 10, 20, 50, 100, 200};
+		int total = 0;
+		for(int i=0; i<notas.length; i++) {
+			int n = valores[i]*notas[i];
+			total = total + n;
+		}
+		return total;
+	}
+	
 	// Sacar o dinheiro.
 	
-	public static void Sacar(int[] notas) {
+	public static int[] Sacar(int[] notas) {
 		int j = 0;
+		int soma = 0;
+		int media = 0;
+		int total = 0;
 		
 		while(j<100 || !Vazio(notas)) {
 			String input = JOptionPane.showInputDialog("Insira a quantidade a sacar:");
 			
 			if(input==null) {
-				return;
+				break;
 			}
 			
 			
@@ -82,13 +107,20 @@ public class Index{
 			
 			int[] resultado = tentarSaque(notas, value);
 			j++;
+			soma = soma + value;
+			total += value;
 		}
+		
 		
 		if(Vazio(notas)) {
 			JOptionPane.showMessageDialog(null, "EXCEDEU O LIMITE DO CAIXA.");
 		}
+		
+	    media = (j>0) ? soma / j : 0;
+	    return new int[] {media, j, total};
 	}
 	
+
 	public static int[] tentarSaque(int[] notas, int value) {
 		int[] cash = new int[7];
 		int[] valores = {2, 5, 10, 20, 50, 100, 200};
@@ -122,6 +154,17 @@ public class Index{
 		return cash;
 	}
 	
+	//Verifica o que sobrou no caixa.
+	public static int sobras(int[] notas) {
+		int[] valores = {2, 5, 10, 20, 50, 100, 200};
+		int sobras = 0;
+		for(int i=0; i<notas.length;i++) {
+			sobras += notas[i] * valores[i];
+		}
+		return sobras;
+	}
+	
+	
 	
 	//Verifica se o vetor com as notas está vazio.
 	public static boolean Vazio(int[] notas) {
@@ -144,5 +187,9 @@ public class Index{
 		
 		JOptionPane.showMessageDialog(null, mostrar.toString());
 		
+	}
+	
+	public static void Estatisticas(int total, int media, int quantidade, int sobras, int vTotal) {
+		JOptionPane.showMessageDialog(null, "Valor total inicial antes dos saques: "+ total + "\nA média dos saques: " + media+ "\nValor total dos saques: "+ vTotal +"\nQuantidade de saques: " + quantidade+ "\nValor total das sobras do caixa: "+ sobras);
 	}
 }
