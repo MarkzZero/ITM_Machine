@@ -1,6 +1,10 @@
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+
 import javax.swing.JOptionPane;
 public class Index{
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		int[] notas = new int[7];
 		int total = 0;
 		int media = 0;
@@ -189,7 +193,26 @@ public class Index{
 		
 	}
 	
-	public static void Estatisticas(int total, int media, int quantidade, int sobras, int vTotal) {
-		JOptionPane.showMessageDialog(null, "Valor total inicial antes dos saques: "+ total + "\nA média dos saques: " + media+ "\nValor total dos saques: "+ vTotal +"\nQuantidade de saques: " + quantidade+ "\nValor total das sobras do caixa: "+ sobras);
+	public static void Estatisticas(int total, int media, int quantidade, int sobras, int vTotal) throws IOException {
+		JOptionPane.showMessageDialog(null, "Valor total inicial antes dos saques: " + total + "\n"
+	                + "A média dos saques: " + media + "\n"
+	                + "Valor total dos saques: " + vTotal + "\n"
+	                + "Quantidade de saques: " + quantidade + "\n"
+	                + "Valor total das sobras do caixa: " + sobras);
+		
+	    String arquivo = "Resumo.txt";
+
+	    try (BufferedWriter escritor = new BufferedWriter(new FileWriter(arquivo))) {
+	        escritor.write("Valor total inicial antes dos saques: " + total + "\n"
+	                + "A média dos saques: " + media + "\n"
+	                + "Valor total dos saques: " + vTotal + "\n"
+	                + "Quantidade de saques: " + quantidade + "\n"
+	                + "Valor total das sobras do caixa: " + sobras);
+	    } catch (IOException erro) {
+	        JOptionPane.showMessageDialog(null, "Erro ao criar o arquivo");
+	        erro.printStackTrace();
+	    }
+
 	}
+
 }
